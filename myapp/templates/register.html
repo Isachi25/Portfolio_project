@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Smart Car Parking System{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <form id="register-form">
+        <h1>Register</h1>
+        <div class="input-box-group">
+            <div class="input-box">
+                <input type="text" placeholder="First Name" name="first_name" autocomplete="given-name" required>
+                <i class='bx bxs-user'></i>
+            </div>
+            <div class="input-box">
+                <input type="text" placeholder="Last Name" name="last_name" autocomplete="family-name" required>
+                <i class='bx bxs-user'></i>
+            </div>
+        </div>
+        <div class="input-box-group">
+            <div class="input-box">
+                <select id="country_code" name="country_code" autocomplete="country" required>
+                    <option value="">Select Code</option>
+                </select>
+                <i class='bx bxs-flag'></i>
+            </div>
+            <div class="input-box">
+                <input type="tel" placeholder="Phone Number" name="phone" autocomplete="tel" required>
+                <i class='bx bxs-phone'></i>
+            </div>
+        </div>
+        <div class="input-box">
+            <input type="email" placeholder="Email" name="email" autocomplete="email" required>
+            <i class='bx bxs-envelope'></i>
+        </div>
+        <div class="input-box">
+            <input type="date" placeholder="Date of Birth" name="dob" autocomplete="bday" required>
+            <i class='bx bxs-calendar'></i>
+        </div>
+        <div class="input-box gender-box">
+            <label>Gender:</label>
+            <label>
+                <input type="radio" name="gender" value="male" autocomplete="sex" required> Male
+            </label>
+            <label>
+                <input type="radio" name="gender" value="female" autocomplete="sex" required> Female
+            </label>
+        </div>
+        <div class="input-box">
+            <input type="password" placeholder="Password" name="password" autocomplete="new-password" required>
+            <i class='bx bxs-lock-alt'></i>
+        </div>
+        <div class="input-box">
+            <input type="password" placeholder="Confirm Password" name="confirm_password" autocomplete="new-password" required>
+            <i class='bx bxs-lock-alt'></i>
+        </div>
+        <div class="remember-forget">
+            <label><input type="checkbox" name="remember"> Remember me</label>
+        </div>
+        <button type="submit" class="btn">Create account</button>
+        <div class="register-link">
+            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_script %}
+<script src="{% static 'js/Country_code.js' %}"></script>
+<script src="{% static 'js/auth.js' %}"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+{% endblock %}
