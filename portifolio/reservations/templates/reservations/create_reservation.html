@@ -1,0 +1,28 @@
+<!-- reservations/templates/reservations/create_reservation.html 
+{% extends 'base.html' %}
+
+{% block title %}Reserve Parking Spot{% endblock %}
+
+{% block content %}
+<div class="reservation-form">
+    <h2>Reserve Spot {{ spot.location }} - {{ spot.size }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn">Confirm Reservation</button>
+    </form>
+</div>
+{% endblock %}
+
+-->
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Create Reservation</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create</button>
+  </form>
+  <a href="{% url 'dashboard' %}">Cancel</a>
+{% endblock %}

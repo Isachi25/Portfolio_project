@@ -1,0 +1,57 @@
+<!-- parking_spots.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parking Spots</title>
+    <style>
+        .parking-section {
+            padding: 20px;
+        }
+
+        .parking-spots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .spot {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .green-box {
+            background-color: green;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Parking Slots Section -->
+    <div id="parking-section" class="parking-section">
+        <h3>Book Slot</h3>
+
+        <!-- Loop through locations -->
+        {% for location, spots in parking_spots_by_location.items %}
+            <h4>{{ location }}</h4> <!-- Display location as a title -->
+            <div class="parking-spots">
+                <!-- Loop through spots -->
+                {% for spot in spots %}
+                    {% if spot.is_available %}
+                        <div class="spot green-box">
+                            <a href="{% url 'reserve_spot' spot.id %}" style="color: white;">{{ spot.spot_type }}</a>
+                        </div>
+                    {% else %}
+                        <div class="spot">
+                            {{ spot.spot_type }}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

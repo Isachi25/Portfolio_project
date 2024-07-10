@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Register - Smart Car Parking System{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <form method="post">
+        {% csrf_token %}
+        <h1>Register</h1>
+        {{ form.as_p }}
+        <div class="remember-forget">
+            <label><input type="checkbox" name="remember"> Remember me</label>
+        </div>
+        <button type="submit" class="btn">Create account</button>
+        <div class="register-link">
+            <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+        </div>
+    </form>
+</div>
+{% endblock %}
