@@ -1,80 +1,88 @@
-Parking Spot Reservation System
+# Parking Spot Reservation System
 
-Introduction
-The Parking Spot Reservation System is a web-based application that allows users to reserve parking spots at various locations. The system integrates M-Pesa for secure payment processing, ensuring a seamless and reliable user experience. The application is built using Django for the backend and includes features such as reservation fee calculation, double booking prevention, and payment verification using transaction codes.
+## Introduction
+The Parking Spot Reservation System is a web-based application designed to help users conveniently reserve parking spots at various locations. The system integrates with M-Pesa for secure payment processing, ensuring a seamless and reliable user experience.
 
-Deployed Site: Parking Spot Reservation System
+### Links
+- **Deployed Site**: [Parking Spot Reservation System]()
+- **Project Blog Article**: [Read our blog on the Parking Spot Reservation System](https://www.linkedin.com/pulse/designing-launching-my-smart-parking-solution-stanley-njoroge-bhrnf/)
+- **Author(s) LinkedIn**: 
+  - [Stanley Njoroge](https://www.linkedin.com/in/stanley-njoroge/)
+  - [Sharon Masiga](https://www.linkedin.com/in/sharonmasiga)
 
-Project Blog Article: Read our blog on the Parking Spot Reservation System
+## Installation
 
-Author(s) LinkedIn:
+1. **Clone the Repository**:
+    ```sh
+    git clone https://github.com/Isachi25/Portfolio_project
+    cd parking-reservation-system
+    ```
 
-Stanley Njoroge
-Sharon Masiga
-Installation
-Clone the Repository: 
+2. **Create a Virtual Environment**:
+    ```sh
+    python -m venv env
+    source env/bin/activate  # On Windows use `env\Scripts\activate`
+    ```
 
-sh
-Copy code
-git clone https://github.com/Isachi25/Portfolio_project
-cd parking-reservation-system
-Create a Virtual Environment:
+3. **Install Dependencies**:
+    ```sh
+    pip install -r requirements.txt
+    ```
 
-sh
-Copy code
-python -m venv env
-source env/bin/activate  # On Windows use `env\Scripts\activate`
-Install Dependencies:
+4. **Apply Migrations**:
+    ```sh
+    python manage.py migrate
+    ```
 
-sh
-Copy code
-pip install -r requirements.txt
-Apply Migrations:
+5. **Run the Development Server**:
+    ```sh
+    python manage.py runserver
+    ```
 
-sh
-Copy code
-python manage.py migrate
-Create a Superuser:
+## Usage
 
-sh
-Copy code
-python manage.py createsuperuser
-Run the Development Server:
+1. **Navigate to the Deployed Site**:
+    Visit  to access the application.
 
-sh
-Copy code
-python manage.py runserver
-Access the Application:
-Open your web browser and go to http://127.0.0.1:8000/
+2. **Reserve a Parking Spot**:
+    - Select a location and parking spot type.
+    - Choose a start and end time for your reservation.
+    - Calculate the payment amount and make the payment via M-Pesa.
+    - Enter the 3-letter M-Pesa transaction code to verify the payment.
+    - Confirm the reservation.
 
-Configuration
-Environment Variables
-Create a .env file in the root directory and add the following configurations:
+## Contributing
 
-env
-Copy code
-DEBUG=True
-SECRET_KEY=your_secret_key
-ALLOWED_HOSTS=127.0.0.1, .localhost
-DATABASE_URL=sqlite:///db.sqlite3  # Use PostgreSQL for production
-DARJA_API_KEY=your_daraja_api_key
-Payment Integration
-M-Pesa: Ensure you have a Daraja API account and the API keys configured in your .env file.
-Usage
-Admin Panel: Access the Django admin panel at http://127.0.0.1:8000/admin/ to manage users and parking spots.
-User Registration: Users can register and log in to the application.
-Making Reservations:
-Users select a parking spot, start time, and end time.
-The system calculates the payment amount.
-Users make the payment to the specified M-Pesa number and enter the transaction code.
-Upon successful verification, the reservation is confirmed.
-API Endpoints
-Calculate Payment Amount: /calculate_payment_amount/
-Verify and Reserve: /verify_and_reserve/
-Contributing
-Contributions are welcome! Please read the contributing guidelines first.
+Contributions are welcome! Please follow these steps:
 
-Related Project
+1. **Fork the Repository**:
+    Click the 'Fork' button at the top right of this repository page.
 
-License
-This project is licensed under the MIT License. See the LICENSE file for details.
+2. **Clone Your Fork**:
+    ```sh
+    git clone https://github.com/Isachi25/Portfolio_project
+    cd parking-reservation-system
+    ```
+
+3. **Create a New Branch**:
+    ```sh
+    git checkout -b feature/your-feature-name
+    ```
+
+4. **Make Your Changes**:
+    Implement your changes and commit them with clear and descriptive messages.
+
+5. **Push to Your Branch**:
+    ```sh
+    git push origin feature/your-feature-name
+    ```
+
+6. **Create a Pull Request**:
+    Open a pull request on the original repository with a clear description of your changes.
+
+## Related Projects
+
+
+## Licensing
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
