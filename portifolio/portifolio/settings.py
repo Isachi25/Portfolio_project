@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 import os
 from pathlib import Path
-import dj_database_url
+
 
 
 
@@ -65,9 +65,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    '/home/mahihu/final/portifolio/reservations/static/',
+    #os.path.join(BASE_DIR, 'portifolio', 'static'),
+   # '/home/mahihu/final/portifolio/reservations/static/',
+   '/home/mahihu/Documents/Portfolio_project/portifolio/reservations/static'
     # Add other paths if necessary
 ]
 
@@ -108,9 +110,9 @@ DATABASES = {
 }
 
 
-DATABASES = {
-    'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
-}
+#DATABASES = {
+ #   'default': dj_database_url.config(conn_max_age=600, ssl_require=True)
+#}
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators

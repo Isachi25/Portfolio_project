@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils.dateparse import parse_datetime
 
 
 def home(request):
@@ -40,7 +41,7 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('dashboard')
+            return redirect('parking_spots')
         else:
             return render(request, 'reservations/login.html', {'error': 'Invalid credentials'})
     return render(request, 'reservations/login.html')
@@ -134,20 +135,14 @@ def reserve_spot_view(request, spot_id):
     if request.method == 'POST':
         form = ReservationForm(request.POST)
         if form.is_valid():
-            reservation = form.save(commit=False)  # Don't save to the database yet
+            reservation = form.save(commit=False)
+            reservation.parking_spot = spot
             reservation.user = request.user
-            reservation.parking_spot = spot  # Set the parking spot
-            reservation.save()  # Now save the reservation with all data
-            return redirect('reservation_success')  # Redirect to a success page
+            reservation.save()
+            # Further processing if needed
     else:
         form = ReservationForm()
-    
-    context = {
-        'form': form,
-        'spot': spot,
-    }
-    
-    return render(request, 'reservations/reserve_spot.html', context)
+    return render(request, 'reservations/reserve_spot.html', {'form': form, 'spot': spot})
 
 @login_required
 def reservation_success_view(request):
@@ -173,3 +168,63 @@ def mpesa_callback(request):
         return JsonResponse({"ResultCode": 0, "ResultDesc": "Accepted"})
     else:
         return JsonResponse({"ResultCode": 1, "ResultDesc": "Invalid Request Method"})
+
+
+def verify_and_reserve(request):
+    if request.method == 'POST':
+        verification_code = request.POST.get('verification_code')
+        reservation_id = request.POST.get('reservation_id')
+
+        try:
+            reservation = Reservation.objects.get(id=reservation_id)
+        except Reservation.DoesNotExist:
+            return JsonResponse({'error': 'Reservation not found.'}, status=404)
+
+        # Verify the verification code (implement your verification logic here)
+        if verification_code == reservation.transaction_code:
+            reservation.payment_status = True
+            reservation.save()
+            return JsonResponse({'success': 'Reservation completed successfully.'})
+        else:
+            return JsonResponse({'error': 'Verification code incorrect.'}, status=400)
+
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)
+
+
+def calculate_payment_amount(request):
+    start_time = parse_datetime(request.GET.get('start_time'))
+    end_time = parse_datetime(request.GET.get('end_time'))
+
+    if start_time and end_time:
+        duration = end_time - start_time
+        total_minutes = duration.total_seconds() / 60
+        if total_minutes <= 180:
+            payment_amount = 150
+        else:
+            extra_minutes = total_minutes - 180
+            payment_amount = 150 + extra_minutes
+
+        return JsonResponse({'payment_amount': payment_amount})
+    
+    return JsonResponse({'error': 'Invalid date format'}, status=400)
+
+
+@csrf_exempt
+def check_availability(request):
+    if request.method == 'GET':
+        spot_id = request.GET.get('spot_id')
+        start_time = parse_datetime(request.GET.get('start_time'))
+        end_time = parse_datetime(request.GET.get('end_time'))
+        
+        overlapping_reservations = Reservation.objects.filter(
+            parking_spot_id=spot_id,
+            start_time__lt=end_time,
+            end_time__gt=start_time
+        )
+
+        if overlapping_reservations.exists():
+            return JsonResponse({'available': False, 'message': 'The spot is not available at the selected time.'})
+        else:
+            return JsonResponse({'available': True})
+
+    return JsonResponse({'available': False, 'message': 'Invalid request method.'})
