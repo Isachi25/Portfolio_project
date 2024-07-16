@@ -69,7 +69,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     #os.path.join(BASE_DIR, 'portifolio', 'static'),
    # '/home/mahihu/final/portifolio/reservations/static/',
-   '/home/mahihu/Documents/Portfolio_project/portifolio/reservations/static'
+   "Portfolio_project/portifolio/reservations/static'
     # Add other paths if necessary
 ]
 
