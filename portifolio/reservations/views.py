@@ -12,6 +12,8 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.dateparse import parse_datetime
+from django.views.decorators.http import require_POST
+
 
 
 def home(request):
@@ -169,27 +171,38 @@ def mpesa_callback(request):
     else:
         return JsonResponse({"ResultCode": 1, "ResultDesc": "Invalid Request Method"})
 
-
+@require_POST
+@login_required
 def verify_and_reserve(request):
-    if request.method == 'POST':
-        verification_code = request.POST.get('verification_code')
-        reservation_id = request.POST.get('reservation_id')
+    reservation_id = request.POST.get('reservation_id')
+    verification_code = request.POST.get('verification_code')
 
-        try:
-            reservation = Reservation.objects.get(id=reservation_id)
-        except Reservation.DoesNotExist:
-            return JsonResponse({'error': 'Reservation not found.'}, status=404)
+    if not reservation_id or not verification_code:
+        return JsonResponse({'success': False, 'error': 'Invalid reservation ID or verification code.'})
 
-        # Verify the verification code (implement your verification logic here)
-        if verification_code == reservation.transaction_code:
-            reservation.payment_status = True
-            reservation.save()
-            return JsonResponse({'success': 'Reservation completed successfully.'})
-        else:
-            return JsonResponse({'error': 'Verification code incorrect.'}, status=400)
+    reservation = get_object_or_404(Reservation, id=reservation_id)
+    try:
+        transaction = Transaction.objects.get(code=verification_code)
+    except Transaction.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Invalid verification code.'})
 
-    return JsonResponse({'error': 'Invalid request method.'}, status=405)
+    if transaction.verified:
+        return JsonResponse({'success': False, 'error': 'Verification code already used.'})
 
+    # Mark the transaction as verified
+    transaction.verified = True
+    transaction.save()
+
+    # Mark the payment as complete in the reservation
+    reservation.payment_status = True
+    reservation.save()
+
+    # Save the reservation
+    reservation.user = request.user
+    reservation.save()
+
+
+    return JsonResponse({'success': True})
 
 def calculate_payment_amount(request):
     start_time = parse_datetime(request.GET.get('start_time'))

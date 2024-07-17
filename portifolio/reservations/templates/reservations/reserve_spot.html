@@ -186,7 +186,7 @@
                             if (response.success) {
                                 alert("Payment verified and reservation completed!");
                                 modal.hide();
-                                window.location.reload();  // Reload the page to reflect the changes
+                                window.location.href = "{% url 'reservation_success' %}"; // Redirect to success page
                             } else {
                                 alert(response.error);
                             }
@@ -196,7 +196,7 @@
                         }
                     });
                 } else {
-                    alert('Please enter a valid 3-letter verification code.');
+                    alert("Please enter a valid 3-letter verification code.");
                 }
             });
         });
