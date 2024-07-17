@@ -59,7 +59,7 @@ ROOT_URLCONF = 'portifolio.urls'
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    BASE_DIR / 'portifolio/reservations/static',
+    BASE_DIR / 'reservations/static',
 ]
 
 TEMPLATES = [
