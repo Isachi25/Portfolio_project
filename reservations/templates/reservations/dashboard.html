@@ -1,67 +1,30 @@
-<!-- reservations/templates/reservations/dashboard.html -->
-{% extends 'base.html' %}
+{% extends "reservations/base.html" %}
 
-{% load static %}
-
-{% block title %}Smart Parking System{% endblock %}
-
-{% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-{% endblock %}
+{% block title %}Dashboard - Smart Parking System{% endblock %}
 
 {% block content %}
-<div class="main--content">
-    <h2>Dashboard</h2>
-
-    
- <!-- Parking Slots Section -->
-<div id="parking-section" class="parking-section">
-    <h3>Book Slot</h3>
-
-    <!-- Loop through locations -->
-    {% for location, spots in parking_spots_by_location.items %}
-        <h4>{{ location }}</h4> <!-- Display location as a title -->
-
-        <div id="parking-lot" class="parking-lot">
-            {% for spot in spots %}
-                <div class="parking-spot {% if spot.is_available %}available{% else %}occupied{% endif %}" data-id="{{ spot.id }}">
-                    <div class="color-box {% if spot.is_available %}available{% endif %}"></div> <!-- Green box for available spots -->
-                    <span>{{ spot.size }} - {{ spot.spot_type }}</span> <!-- Display spot type -->
-                </div>
-            {% endfor %}
-        </div>
-    {% endfor %}
-
-    <div class="buttons">
-        <button id="reserve-btn" class="btn" disabled>Reserve</button>
-    </div> 
+<div class="sidebar">
+    <!-- Sidebar content -->
 </div>
 
+<div class="main--content">
+    <div class="header--wrapper">
+        <!-- Header content -->
+    </div>
 
+    <!-- Time Selection Section -->
+    <div class="time-selection">
+        <!-- Time selection content -->
+    </div>
 
-    <!-- Reservations Section -->
-    <div class="reservations-section">
-        <h3>Your Reservations</h3>
-        <ul>
-            {% for reservation in reservations %}
-                <li>
-                    Spot: {{ reservation.parking_spot.location }} - {{ reservation.parking_spot.size }},
-                    From: {{ reservation.start_time }}, To: {{ reservation.end_time }}
-                </li>
-            {% endfor %}
-        </ul>
+    <!-- Parking Slots Section -->
+    <div id="parking-section" class="parking-section">
+        <!-- Parking slots content -->
+    </div>
+
+    <!-- Key Section -->
+    <div class="key-section">
+        <!-- Key content -->
     </div>
 </div>
-{% endblock %}
-
-{% block extra_script %}
-<script>
-    $(document).ready(function() {
-        $('.parking-spot.available').on('click', function() {
-            let spotId = $(this).data('id');
-            window.location.href = `/reserve/${spotId}/`;
-        });
-    });
-</script>
 {% endblock %}
