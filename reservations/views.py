@@ -13,6 +13,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.dateparse import parse_datetime
 
+def about(request):
+    return render(request, 'about.html')
 
 def home(request):
     return render(request, 'reservations/index.html')
