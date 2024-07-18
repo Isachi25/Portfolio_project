@@ -53,7 +53,7 @@ MIDDLEWARE = [
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-ROOT_URLCONF = 'portifolio.urls'
+ROOT_URLCONF = 'portifolio.portifolio.urls'
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
