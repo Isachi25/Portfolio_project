@@ -14,6 +14,6 @@ urlpatterns = [
     path('verify-and-reserve/', verify_and_reserve, name='verify_and_reserve'),
     path('calculate-payment-amount/', calculate_payment_amount, name='calculate_payment_amount'),
     path('check-availability/', check_availability, name='check_availability'),
-
+    path('about/', views.about, name='about'),
 
 ]
