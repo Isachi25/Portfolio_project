@@ -1,7 +1,22 @@
-{% extends 'base.html' %}
+{% extends "reservations/base.html" %}
 
-{% block title %}Home - Smart Parking System{% endblock %}
+{% block title %}Smart Parking System{% endblock %}
 
 {% block content %}
-    <h1>Welcome to Smart Parking!</h1>
+<nav>
+    <div class="nav-right">
+        <a href="{% url 'about' %}">About Us</a>
+        <a href="{% url 'services' %}">Our Services</a>
+        <a href="{% url 'contacts' %}">Contacts</a>
+    </div>
+</nav>
+<header>
+    <h1>Welcome to Smart Parking, where booking and reservation are guaranteed at your comfort!</h1>
+</header>
+<div class="container">
+    <!-- Additional content can go here -->
+</div>
+<footer>
+    <!-- Footer content -->
+</footer>
 {% endblock %}
