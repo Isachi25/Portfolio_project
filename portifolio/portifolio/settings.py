@@ -53,7 +53,7 @@ MIDDLEWARE = [
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-ROOT_URLCONF = 'portfolio.urls'
+ROOT_URLCONF = 'portifolio.portifolio.urls'
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = '/static/'
@@ -78,7 +78,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'portfolio.wsgi.application'
+WSGI_APPLICATION = 'portifolio.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
