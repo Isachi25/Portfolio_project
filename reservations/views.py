@@ -12,6 +12,7 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.dateparse import parse_datetime
+from django.db import transaction as db_transaction
 
 def about(request):
     return render(request, 'reservations/about.html')
@@ -188,38 +189,40 @@ def verify_and_reserve(request):
     if request.method == 'POST':
         verification_code = request.POST.get('verification_code')
         reservation_id = request.POST.get('reservation_id')
-        start_time = parse_datetime(request.POST.get('start_time'))
-        end_time = parse_datetime(request.POST.get('end_time'))
-        payment_amount = request.POST.get('payment_amount')
+
+        # Validate inputs
+        if not verification_code or not reservation_id:
+            return JsonResponse({'error': 'Invalid input.'}, status=400)
 
         try:
             reservation = Reservation.objects.get(id=reservation_id)
         except Reservation.DoesNotExist:
             return JsonResponse({'error': 'Reservation not found.'}, status=404)
 
-        # Check if the verification code exists in the Transaction table
         try:
             transaction = Transaction.objects.get(code=verification_code)
         except Transaction.DoesNotExist:
             return JsonResponse({'error': 'Verification code not found.'}, status=404)
 
-        # Check if the transaction is already verified
         if transaction.verified:
             return JsonResponse({'error': 'Code already used.'}, status=400)
 
-        # Verify the transaction and mark it as verified
-        transaction.verified = True
-        transaction.save()
+        # Use a database transaction to ensure atomic operations
+        with db_transaction.atomic():
+            # Verify and update transaction
+            transaction.verified = True
+            transaction.save()
 
-        # Mark the reservation as paid
-        reservation.payment_status = True
-        reservation.transaction_code = verification_code
-        reservation.save()
+            # Update reservation
+            reservation.payment_status = True
+            reservation.transaction_code = verification_code
+            reservation.save()
 
-        return JsonResponse({'success': 'Reservation completed successfully.'})
+            return JsonResponse({'success': 'Reservation completed successfully.'})
 
     return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)
 def calculate_payment_amount(request):
     start_time = parse_datetime(request.GET.get('start_time'))
     end_time = parse_datetime(request.GET.get('end_time'))
