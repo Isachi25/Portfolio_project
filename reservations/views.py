@@ -5,22 +5,23 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from .models import ParkingSpot, Reservation, Profile, Transaction
-from .forms import UserRegistrationForm, ReservationForm
+from .forms import UserRegistrationForm, ReservationForm, LoginForm
 from datetime import datetime
 from django.core.exceptions import ValidationError
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.dateparse import parse_datetime
+from django.db import transaction as db_transaction
 
 def about(request):
-    return render(request, 'about.html')
+    return render(request, 'reservations/about.html')
 
 def services(request):
-    return render(request, 'services.html')
+    return render(request, 'reservations/services.html')
 
 def contacts(request):
-    return render(request, 'contacts.html')
+    return render(request, 'reservations/contacts.html')
 
 def home(request):
     return render(request, 'reservations/index.html')
@@ -44,15 +45,20 @@ def register(request):
 
 def login_view(request):
     if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            return redirect('parking_spots')
-        else:
-            return render(request, 'reservations/login.html', {'error': 'Invalid credentials'})
-    return render(request, 'reservations/login.html')
+        form = LoginForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('parking_spots')
+            else:
+                error = 'Invalid credentials'
+                return render(request, 'reservations/login.html', {'form': form, 'error': error})
+    else:
+        form = LoginForm()
+    return render(request, 'reservations/login.html', {'form': form})
 
 @login_required
 def dashboard(request):
@@ -178,27 +184,45 @@ def mpesa_callback(request):
         return JsonResponse({"ResultCode": 1, "ResultDesc": "Invalid Request Method"})
 
 
+@csrf_exempt
 def verify_and_reserve(request):
     if request.method == 'POST':
         verification_code = request.POST.get('verification_code')
         reservation_id = request.POST.get('reservation_id')
+
+        # Validate inputs
+        if not verification_code or not reservation_id:
+            return JsonResponse({'error': 'Invalid input.'}, status=400)
 
         try:
             reservation = Reservation.objects.get(id=reservation_id)
         except Reservation.DoesNotExist:
             return JsonResponse({'error': 'Reservation not found.'}, status=404)
 
-        # Verify the verification code (implement your verification logic here)
-        if verification_code == reservation.transaction_code:
+        try:
+            transaction = Transaction.objects.get(code=verification_code)
+        except Transaction.DoesNotExist:
+            return JsonResponse({'error': 'Verification code not found.'}, status=404)
+
+        if transaction.verified:
+            return JsonResponse({'error': 'Code already used.'}, status=400)
+
+        # Use a database transaction to ensure atomic operations
+        with db_transaction.atomic():
+            # Verify and update transaction
+            transaction.verified = True
+            transaction.save()
+
+            # Update reservation
             reservation.payment_status = True
+            reservation.transaction_code = verification_code
             reservation.save()
+
             return JsonResponse({'success': 'Reservation completed successfully.'})
-        else:
-            return JsonResponse({'error': 'Verification code incorrect.'}, status=400)
 
     return JsonResponse({'error': 'Invalid request method.'}, status=405)
 
-
+    return JsonResponse({'error': 'Invalid request method.'}, status=405)
 def calculate_payment_amount(request):
     start_time = parse_datetime(request.GET.get('start_time'))
     end_time = parse_datetime(request.GET.get('end_time'))

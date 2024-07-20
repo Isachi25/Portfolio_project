@@ -83,7 +83,7 @@
             var endTimeField = $('#id_end_time');
             var startTimeField = $('#id_start_time');
             var spotId = $("input[name='reservation_id']").val();
-
+    
             function validateTime() {
                 var startTime = startTimeField.val();
                 var endTime = endTimeField.val();
@@ -95,11 +95,11 @@
                 }
                 return true;
             }
-
+    
             function checkAvailability() {
                 var startTime = startTimeField.val();
                 var endTime = endTimeField.val();
-
+    
                 if (startTime && endTime) {
                     $.ajax({
                         url: "{% url 'check_availability' %}",
@@ -124,11 +124,11 @@
                     });
                 }
             }
-
+    
             function calculatePayment() {
                 var startTime = startTimeField.val();
                 var endTime = endTimeField.val();
-
+    
                 if (startTime && endTime && validateTime()) {
                     $.ajax({
                         url: "{% url 'calculate_payment_amount' %}",
@@ -152,27 +152,31 @@
                     });
                 }
             }
-
+    
             endTimeField.change(function() {
                 if (validateTime()) {
                     checkAvailability();
                 }
             });
-
+    
             span.click(function() {
                 modal.hide();
                 endTimeField.val(''); // Clear the End time field when clicking the close symbol (x)
                 startTimeField.val(''); // Clear the Start time field when clicking the close symbol (x)
             });
-
+    
             cancelBtn.click(function() {
                 modal.hide();
                 endTimeField.val(''); // Clear the End time field when clicking the Cancel button
                 startTimeField.val(''); // Clear the Start time field when clicking the Cancel button
             });
-
+    
             verifyPaymentBtn.click(function() {
                 var verificationCode = $("#verification-code").val().trim();
+                var startTime = startTimeField.val();
+                var endTime = endTimeField.val();
+                var paymentAmount = $('#payment-amount').val();
+    
                 if (verificationCode.length === 3) {
                     $.ajax({
                         url: "{% url 'verify_and_reserve' %}",
@@ -180,13 +184,16 @@
                         data: {
                             reservation_id: spotId,
                             verification_code: verificationCode,
+                            start_time: startTime,
+                            end_time: endTime,
+                            payment_amount: paymentAmount,
                             csrfmiddlewaretoken: '{{ csrf_token }}'
                         },
                         success: function(response) {
                             if (response.success) {
                                 alert("Payment verified and reservation completed!");
                                 modal.hide();
-                                window.location.reload();  // Reload the page to reflect the changes
+                                window.location.href = "{% url 'reservation_success' %}";
                             } else {
                                 alert(response.error);
                             }
@@ -201,5 +208,6 @@
             });
         });
     </script>
+    
 </body>
 </html>
